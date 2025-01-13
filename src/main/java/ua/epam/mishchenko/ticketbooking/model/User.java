@@ -42,7 +42,7 @@ public class User {
     private final List<Ticket> tickets = new ArrayList<>();
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    private UserAccount userAccount;
+    private UserAccount userAccount; // embedded
 
     /**
      * Instantiates a new User.

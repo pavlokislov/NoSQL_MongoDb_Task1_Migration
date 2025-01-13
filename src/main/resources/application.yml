@@ -1,3 +1,4 @@
+
 spring:
   jpa:
     properties:
@@ -14,12 +15,22 @@ spring:
       javax:
         persistence.sharedCache.mode: ENABLE_SELECTIVE
     show-sql: true
-
+    hibernate:
+      ddl-auto: update
+  data:
+    mongodb:
+       host: localhost
+       port: 27017
+       database: ticket_booking
   datasource:
     url: jdbc:postgresql://localhost:5432/ticket_booking
     username: postgres
-    password: pass
+    password: postgres
     driver-class-name: org.postgresql.Driver
+
+properties:
+  migration_enabled: true
+  main_db: mongo
 
 logging:
   level:
@@ -30,3 +41,5 @@ logging:
     net:
       sf:
         ehcache=debug:
+server:
+  port: 8082

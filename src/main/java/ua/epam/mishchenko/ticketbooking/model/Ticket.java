@@ -27,14 +27,14 @@ public class Ticket {
      */
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private User user; // embedded
 
     /**
      * The Event entity.
      */
     @ManyToOne
     @JoinColumn(name = "event_id")
-    private Event event;
+    private Event event; // embedded
 
     /**
      * The Place.
