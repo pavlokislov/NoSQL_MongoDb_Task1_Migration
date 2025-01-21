@@ -57,8 +57,8 @@ public class TicketsController {
      * @return the model and view
      */
     @PostMapping
-    public ModelAndView bookTicket(@RequestParam long userId,
-                                   @RequestParam long eventId,
+    public ModelAndView bookTicket(@RequestParam String userId,
+                                   @RequestParam String eventId,
                                    @RequestParam int place,
                                    @RequestParam Category category) {
         log.info("Booking a ticket: userId={}, eventId={}, place={}, category={}", userId, eventId, place, category);
@@ -94,7 +94,7 @@ public class TicketsController {
      * @return the model and view
      */
     @GetMapping("/user/{userId}")
-    public ModelAndView showTicketsByUser(@PathVariable long userId,
+    public ModelAndView showTicketsByUser(@PathVariable String userId,
                                           @RequestParam int pageSize,
                                           @RequestParam int pageNum) {
         log.info("Showing the tickets by user with id: {}", userId);
@@ -125,7 +125,7 @@ public class TicketsController {
      * @return the model and view
      */
     @GetMapping("/event/{eventId}")
-    public ModelAndView showTicketsByEvent(@PathVariable long eventId,
+    public ModelAndView showTicketsByEvent(@PathVariable String eventId,
                                            @RequestParam int pageSize,
                                            @RequestParam int pageNum) {
         log.info("Showing the tickets by event with id: {}", eventId);
@@ -154,7 +154,7 @@ public class TicketsController {
      * @return the model and view
      */
     @DeleteMapping("/{id}")
-    public ModelAndView cancelTicket(@PathVariable long id) {
+    public ModelAndView cancelTicket(@PathVariable String id) {
         log.info("Canceling ticket with id: {}", id);
         Map<String, Object> model = new HashMap<>();
         boolean isTicketCanceled = bookingFacade.cancelTicket(id);

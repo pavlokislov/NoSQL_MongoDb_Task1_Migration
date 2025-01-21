@@ -30,10 +30,10 @@ public class EventMongoServiceImpl implements EventService {
      * @return the event by id
      */
     @Override
-    public EventDto getEventById(long eventId) {
+    public EventDto getEventById(String eventId) {
         log.info("Finding an event by id: {}", eventId);
         try {
-            var event = eventRepository.findById(String.valueOf(eventId))
+            var event = eventRepository.findById(eventId)
                     .orElseThrow(() -> new RuntimeException("Can not to find an event by id: " + eventId));
             log.info("Event with id {} successfully found ", eventId);
             return EventDto.createFromEventMongo(event);
@@ -193,10 +193,10 @@ public class EventMongoServiceImpl implements EventService {
      * @return the boolean
      */
     @Override
-    public boolean deleteEvent(long eventId) {
+    public boolean deleteEvent(String eventId) {
         log.info("Start deleting an event with id: {}", eventId);
         try {
-            eventRepository.deleteById(String.valueOf(eventId));
+            eventRepository.deleteById(eventId);
             log.info("Successfully deletion of the event with id: {}", eventId);
             return true;
         } catch (RuntimeException e) {

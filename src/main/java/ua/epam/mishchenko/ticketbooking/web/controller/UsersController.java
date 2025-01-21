@@ -51,7 +51,7 @@ public class UsersController {
      * @return the model and view
      */
     @GetMapping("/{id}")
-    public ModelAndView showUserById(@PathVariable long id) {
+    public ModelAndView showUserById(@PathVariable String id) {
         log.info("Showing user by id: {}", id);
         Map<String, Object> model = new HashMap<>();
         UserDto userById = bookingFacade.getUserById(id);
@@ -205,7 +205,7 @@ public class UsersController {
      * @return the model and view
      */
     @DeleteMapping("/{id}")
-    public ModelAndView deleteUser(@PathVariable long id) {
+    public ModelAndView deleteUser(@PathVariable String id) {
         log.info("Deleting the user with id: {}", id);
         Map<String, Object> model = new HashMap<>();
         boolean isUserRemoved = bookingFacade.deleteUser(id);

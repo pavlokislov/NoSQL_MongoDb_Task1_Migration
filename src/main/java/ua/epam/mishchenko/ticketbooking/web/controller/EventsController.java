@@ -56,7 +56,7 @@ public class EventsController {
      * @return the model and view
      */
     @GetMapping("/{id}")
-    public ModelAndView showEventById(@PathVariable long id) {
+    public ModelAndView showEventById(@PathVariable String id) {
         log.info("Showing event by id: {}", id);
         EventDto eventById = bookingFacade.getEventById(id);
         Map<String, Object> model = new HashMap<>();
@@ -205,7 +205,7 @@ public class EventsController {
      * @return the model and view
      */
     @PutMapping
-    public ModelAndView updateEvent(@RequestParam long id,
+    public ModelAndView updateEvent(@RequestParam String id,
                                     @RequestParam String title,
                                     @RequestParam String day,
                                     @RequestParam BigDecimal price) {
@@ -236,9 +236,9 @@ public class EventsController {
      * @param price the price
      * @return the event
      */
-    private EventDto createEventEntityWithId(long id, String title, String day, BigDecimal price) {
+    private EventDto createEventEntityWithId(String id, String title, String day, BigDecimal price) {
         EventDto eventEntity = createEventEntityWithoutId(title, day, price);
-        eventEntity.setId(String.valueOf(id));
+        eventEntity.setId(id);
         return eventEntity;
     }
 
@@ -249,7 +249,7 @@ public class EventsController {
      * @return the model and view
      */
     @DeleteMapping("/{id}")
-    public ModelAndView deleteEvent(@PathVariable long id) {
+    public ModelAndView deleteEvent(@PathVariable String id) {
         log.info("Deleting an event with id: {}", id);
         Map<String, Object> model = new HashMap<>();
         boolean isEventDeleted = bookingFacade.deleteEvent(id);

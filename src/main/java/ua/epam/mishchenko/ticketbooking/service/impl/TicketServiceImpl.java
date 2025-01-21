@@ -66,11 +66,11 @@ public class TicketServiceImpl implements TicketService {
      */
     @Override
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    public TicketDto bookTicket(long userId, long eventId, int place, Category category) {
+    public TicketDto bookTicket(String userId, String eventId, int place, Category category) {
         log.info("Start booking a ticket for user with id {}, event with id event {}, place {}, category {}",
                 userId, eventId, place, category);
         try {
-            return processBookingTicket(userId, eventId, place, category);
+            return processBookingTicket(Long.parseLong(userId), Long.parseLong(eventId), place, category);
         } catch (RuntimeException e) {
             log.warn("Can not to book a ticket for user with id {}, event with id {}, place {}, category {}",
                     userId, eventId, place, category, e);
@@ -252,10 +252,10 @@ public class TicketServiceImpl implements TicketService {
      * @return the boolean
      */
     @Override
-    public boolean cancelTicket(long ticketId) {
+    public boolean cancelTicket(String ticketId) {
         log.info("Start canceling a ticket with id: {}", ticketId);
         try {
-            ticketRepository.deleteById(ticketId);
+            ticketRepository.deleteById(Long.parseLong(ticketId));
             log.info("Successfully canceling of the ticket with id: {}", ticketId);
             return true;
         } catch (RuntimeException e) {

@@ -55,7 +55,7 @@ public class TicketMongoServiceImpl implements TicketService {
      */
     @Override
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    public TicketDto bookTicket(long userId, long eventId, int place, Category category) {
+    public TicketDto bookTicket(String userId, String eventId, int place, Category category) {
         log.info("Start booking a ticket for user with id {}, event with id event {}, place {}, category {}",
                 userId, eventId, place, category);
         try {
@@ -69,7 +69,7 @@ public class TicketMongoServiceImpl implements TicketService {
         }
     }
 
-    private TicketDto processBookingTicket(long userId, long eventId, int place, Category category) {
+    private TicketDto processBookingTicket(String userId, String eventId, int place, Category category) {
         throwRuntimeExceptionIfUserNotExist(userId);
         throwRuntimeExceptionIfEventNotExist(eventId);
         throwRuntimeExceptionIfTicketAlreadyBooked(eventId, place, category);
@@ -82,7 +82,7 @@ public class TicketMongoServiceImpl implements TicketService {
         return ticket;
     }
 
-    private TicketDto saveBookedTicket(long userId, long eventId, int place, Category category) {
+    private TicketDto saveBookedTicket(String userId, String eventId, int place, Category category) {
         return TicketDto.fromMongoTicket(ticketRepository.save(createNewTicket(userId, eventId, place, category)));
     }
 
@@ -103,31 +103,31 @@ public class TicketMongoServiceImpl implements TicketService {
         }
     }
 
-    private void throwRuntimeExceptionIfTicketAlreadyBooked(long eventId, int place, Category category) {
+    private void throwRuntimeExceptionIfTicketAlreadyBooked(String eventId, int place, Category category) {
         if (ticketCustomMongoRepository.existsByEventAndPlaceAndCategory(String.valueOf(eventId), place, category)) {
             throw new RuntimeException("This ticket already booked");
         }
     }
 
-    private EventDto getEvent(long eventId) {
+    private EventDto getEvent(String eventId) {
         return eventRepository.findById(String.valueOf(eventId))
                 .map(EventDto::createFromEventMongo)
                 .orElseThrow(() -> new RuntimeException("Can not to find an event by id: " + eventId));
     }
 
-    private UserAccountMongo getUserAccount(long userId) {
+    private UserAccountMongo getUserAccount(String userId) {
         return userAccountCustomRepository.findByUserId(String.valueOf(userId))
                 .orElseThrow(() -> new RuntimeException("Can not to find a user account by user id: " + userId));
     }
 
-    private void throwRuntimeExceptionIfEventNotExist(long eventId) {
-        if (!eventRepository.existsById(String.valueOf(eventId))) {
+    private void throwRuntimeExceptionIfEventNotExist(String eventId) {
+        if (!eventRepository.existsById(eventId)) {
             throw new RuntimeException("The event with id " + eventId + " does not exist");
         }
     }
 
-    private void throwRuntimeExceptionIfUserNotExist(long userId) {
-        if (!userRepository.existsById(String.valueOf(userId))) {
+    private void throwRuntimeExceptionIfUserNotExist(String userId) {
+        if (!userRepository.existsById(userId)) {
             throw new RuntimeException("The user with id " + userId + " does not exist");
         }
     }
@@ -145,9 +145,9 @@ public class TicketMongoServiceImpl implements TicketService {
      * @param category the category
      * @return the ticket
      */
-    private TicketMongo createNewTicket(long userId, long eventId, int place, Category category) {
-        UserMongo user = userRepository.findById(String.valueOf(userId)).get();
-        EventMongo event = eventRepository.findById(String.valueOf(eventId)).get();
+    private TicketMongo createNewTicket(String userId, String eventId, int place, Category category) {
+        UserMongo user = userRepository.findById(userId).get();
+        EventMongo event = eventRepository.findById(eventId).get();
         return new TicketMongo(user, event, place, category);
     }
 
@@ -168,7 +168,6 @@ public class TicketMongoServiceImpl implements TicketService {
                 log.warn("The user can not be a null");
                 return new ArrayList<>();
             }
-            System.out.println(ticketRepository.findAll());
             Page<TicketDto> ticketsByUser = ticketCustomMongoRepository.getAllByUserId(
                     PageRequest.of(pageNum - 1, pageSize),
                     (user.getId()));
@@ -242,7 +241,7 @@ public class TicketMongoServiceImpl implements TicketService {
      * @return the boolean
      */
     @Override
-    public boolean cancelTicket(long ticketId) {
+    public boolean cancelTicket(String ticketId) {
         log.info("Start canceling a ticket with id: {}", ticketId);
         try {
             ticketRepository.deleteById(String.valueOf(ticketId));

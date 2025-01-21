@@ -41,10 +41,10 @@ public class UserServiceImpl implements UserService {
      * @return the user by id
      */
     @Override
-    public UserDto getUserById(long userId) {
+    public UserDto getUserById(String userId) {
         log.info("Finding a user by id: {}", userId);
         try {
-            User user = userRepository.findById(userId)
+            User user = userRepository.findById(Long.parseLong(userId))
                     .orElseThrow(() -> new RuntimeException("Can not to get a user by id: " + userId));
             log.info("The user with id {} successfully found ", userId);
             return UserDto.buildFromSqlUser(user);
@@ -189,10 +189,10 @@ public class UserServiceImpl implements UserService {
      * @return the boolean
      */
     @Override
-    public boolean deleteUser(long userId) {
+    public boolean deleteUser(String userId) {
         log.info("Start deleting an user with id: {}", userId);
         try {
-            userRepository.deleteById(userId);
+            userRepository.deleteById(Long.parseLong(userId));
             log.info("Successfully deletion of the user with id: {}", userId);
             return true;
         } catch (RuntimeException e) {

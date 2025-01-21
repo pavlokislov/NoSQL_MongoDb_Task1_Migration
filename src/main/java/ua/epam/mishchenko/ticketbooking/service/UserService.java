@@ -15,7 +15,7 @@ public interface UserService {
      * @param userId the user id
      * @return the user by id
      */
-    UserDto getUserById(long userId);
+    UserDto getUserById(String userId);
 
     /**
      * Gets user by email.
@@ -57,5 +57,5 @@ public interface UserService {
      * @param userId the user id
      * @return the boolean
      */
-    boolean deleteUser(long userId);
+    boolean deleteUser(String userId);
 }

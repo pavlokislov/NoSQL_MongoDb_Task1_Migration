@@ -23,10 +23,10 @@ public class UserMongoServiceImpl implements UserService {
     private final UserMongoRepository userRepository;
 
     @Override
-    public UserDto getUserById(long userId) {
+    public UserDto getUserById(String userId) {
         log.info("Finding a user by id: {}", userId);
         try {
-            UserMongo user = userRepository.findById(String.valueOf(userId))
+            UserMongo user = userRepository.findById(userId)
                     .orElseThrow(() -> new RuntimeException("Can not to get a user by id: " + userId));
             log.info("The user with id {} successfully found ", userId);
             return UserDto.buildFromMongoUser(user);
@@ -143,7 +143,15 @@ public class UserMongoServiceImpl implements UserService {
     }
 
     @Override
-    public boolean deleteUser(long userId) {
-        return false;
+    public boolean deleteUser(String userId) {
+        log.info("Start deleting an user with id: {}", userId);
+        try {
+            userRepository.deleteById(userId);
+            log.info("Successfully deletion of the user with id: {}", userId);
+            return true;
+        } catch (RuntimeException e) {
+            log.warn("Can not to delete an user with id: {}", userId, e);
+            return false;
+        }
     }
 }
