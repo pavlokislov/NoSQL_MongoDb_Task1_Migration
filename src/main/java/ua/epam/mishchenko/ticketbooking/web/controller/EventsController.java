@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import ua.epam.mishchenko.ticketbooking.facade.impl.BookingFacadeImpl;
-import ua.epam.mishchenko.ticketbooking.model.Event;
+import ua.epam.mishchenko.ticketbooking.dto.EventDto;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -58,7 +58,7 @@ public class EventsController {
     @GetMapping("/{id}")
     public ModelAndView showEventById(@PathVariable long id) {
         log.info("Showing event by id: {}", id);
-        Event eventById = bookingFacade.getEventById(id);
+        EventDto eventById = bookingFacade.getEventById(id);
         Map<String, Object> model = new HashMap<>();
         if (isNull(eventById)) {
             model.put("message", "Can not to get an event by id: " + id);
@@ -76,7 +76,7 @@ public class EventsController {
      * @param event the event
      * @return the boolean
      */
-    private boolean isNull(Event event) {
+    private boolean isNull(EventDto event) {
         return event == null;
     }
 
@@ -94,7 +94,7 @@ public class EventsController {
                                           @RequestParam int pageNum) {
         log.info("Showing events by title: {}", title);
         Map<String, Object> model = new HashMap<>();
-        List<Event> eventsByTitle = bookingFacade.getEventsByTitle(title, pageSize, pageNum);
+        List<EventDto> eventsByTitle = bookingFacade.getEventsByTitle(title, pageSize, pageNum);
         if (eventsByTitle.isEmpty()) {
             model.put("message", "Can not to get events by title: " + title);
             log.info("Can not to get events by title: {}", title);
@@ -121,7 +121,7 @@ public class EventsController {
         Map<String, Object> model = new HashMap<>();
         try {
             Date date = parseFromStringToDate(day);
-            List<Event> eventsForDay = bookingFacade.getEventsForDay(date, pageSize, pageNum);
+            List<EventDto> eventsForDay = bookingFacade.getEventsForDay(date, pageSize, pageNum);
             if (eventsForDay.isEmpty()) {
                 model.put("message", "Can not to get events for day: " + day);
                 log.info("Can not to get events for day: {}", day);
@@ -150,7 +150,7 @@ public class EventsController {
         log.info("Creating an event with title={} and day={} and price={}", title, day, price);
         Map<String, Object> model = new HashMap<>();
         try {
-            Event event = bookingFacade.createEvent(createEventEntityWithoutId(title, day, price));
+            EventDto event = bookingFacade.createEvent(createEventEntityWithoutId(title, day, price));
             if (isNull(event)) {
                 model.put("message", "Can not to create an event");
                 log.info("Can not to create an event");
@@ -173,12 +173,12 @@ public class EventsController {
      * @param price the price
      * @return the event
      */
-    private Event createEventEntityWithoutId(String title, String day, BigDecimal price) {
-        Event event = new Event();
-        event.setTitle(title);
-        event.setDate(parseFromStringToDate(day));
-        event.setTicketPrice(price);
-        return event;
+    private EventDto createEventEntityWithoutId(String title, String day, BigDecimal price) {
+        EventDto eventDto = new EventDto();
+        eventDto.setTitle(title);
+        eventDto.setDate(parseFromStringToDate(day));
+        eventDto.setTicketPrice(price);
+        return eventDto;
     }
 
     /**
@@ -212,7 +212,7 @@ public class EventsController {
         log.info("Updating an event with id: {}", id);
         Map<String, Object> model = new HashMap<>();
         try {
-            Event event = bookingFacade.updateEvent(createEventEntityWithId(id, title, day, price));
+            EventDto event = bookingFacade.updateEvent(createEventEntityWithId(id, title, day, price));
             if (isNull(event)) {
                 model.put("message", "Can not to update an event with id: " + id);
                 log.info("Can not to update an event with id: {}", id);
@@ -236,9 +236,9 @@ public class EventsController {
      * @param price the price
      * @return the event
      */
-    private Event createEventEntityWithId(long id, String title, String day, BigDecimal price) {
-        Event eventEntity = createEventEntityWithoutId(title, day, price);
-        eventEntity.setId(id);
+    private EventDto createEventEntityWithId(long id, String title, String day, BigDecimal price) {
+        EventDto eventEntity = createEventEntityWithoutId(title, day, price);
+        eventEntity.setId(String.valueOf(id));
         return eventEntity;
     }
 

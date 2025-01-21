@@ -3,14 +3,15 @@ package ua.epam.mishchenko.ticketbooking.model.mongo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ua.epam.mishchenko.ticketbooking.model.Category;
+
+import java.math.BigDecimal;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Ticket {
+public class UserAccountMongo {
 
-    private User user;
-    private int place;
-    private Category category;
+    private BigDecimal money;
+
 }
+

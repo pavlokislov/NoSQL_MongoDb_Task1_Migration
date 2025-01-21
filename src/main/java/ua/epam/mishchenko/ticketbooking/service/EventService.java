@@ -1,6 +1,7 @@
 package ua.epam.mishchenko.ticketbooking.service;
 
-import ua.epam.mishchenko.ticketbooking.model.Event;
+
+import ua.epam.mishchenko.ticketbooking.dto.EventDto;
 
 import java.util.Date;
 import java.util.List;
@@ -16,7 +17,7 @@ public interface EventService {
      * @param eventId the event id
      * @return the event by id
      */
-    Event getEventById(long eventId);
+    EventDto getEventById(long eventId);
 
     /**
      * Gets events by title.
@@ -26,7 +27,7 @@ public interface EventService {
      * @param pageNum  the page num
      * @return the events by title
      */
-    List<Event> getEventsByTitle(String title, int pageSize, int pageNum);
+    List<EventDto> getEventsByTitle(String title, int pageSize, int pageNum);
 
     /**
      * Gets events for day.
@@ -36,7 +37,7 @@ public interface EventService {
      * @param pageNum  the page num
      * @return the events for day
      */
-    List<Event> getEventsForDay(Date day, int pageSize, int pageNum);
+    List<EventDto> getEventsForDay(Date day, int pageSize, int pageNum);
 
     /**
      * Create event event.
@@ -44,7 +45,7 @@ public interface EventService {
      * @param event the event
      * @return the event
      */
-    Event createEvent(Event event);
+    EventDto createEvent(EventDto event);
 
     /**
      * Update event event.
@@ -52,7 +53,7 @@ public interface EventService {
      * @param event the event
      * @return the event
      */
-    Event updateEvent(Event event);
+    EventDto updateEvent(EventDto event);
 
     /**
      * Delete event boolean.

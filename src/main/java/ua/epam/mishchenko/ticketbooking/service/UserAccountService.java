@@ -1,10 +1,10 @@
 package ua.epam.mishchenko.ticketbooking.service;
 
-import ua.epam.mishchenko.ticketbooking.model.UserAccount;
+import ua.epam.mishchenko.ticketbooking.dto.UserAccountDTO;
 
 import java.math.BigDecimal;
 
 public interface UserAccountService {
 
-    UserAccount refillAccount(long userId, BigDecimal money);
+    UserAccountDTO refillAccount(long userId, BigDecimal money);
 }

@@ -7,7 +7,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.servlet.ModelAndView;
 import ua.epam.mishchenko.ticketbooking.facade.impl.BookingFacadeImpl;
-import ua.epam.mishchenko.ticketbooking.model.Event;
+import ua.epam.mishchenko.ticketbooking.dto.EventDto;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -41,7 +41,7 @@ public class EventsControllerTest {
 
     @Test
     public void showEventByIdWithExistingEventIdShouldReturnModelAndViewWithEvent() {
-        Event event = new Event(1L, "Test event", new Date(System.currentTimeMillis()), BigDecimal.ONE);
+        EventDto event = new EventDto(1L, "Test event", new Date(System.currentTimeMillis()), BigDecimal.ONE);
 
         when(bookingFacade.getEventById(anyLong())).thenReturn(event);
 
@@ -72,7 +72,7 @@ public class EventsControllerTest {
 
     @Test
     public void showEventsByTitleWithExistingEventTitleShouldReturnModelAndViewWithListOfEvents() {
-        Event event = new Event(1L, "Test event", new Date(System.currentTimeMillis()), BigDecimal.ONE);
+        EventDto event = new EventDto(1L, "Test event", new Date(System.currentTimeMillis()), BigDecimal.ONE);
 
         when(bookingFacade.getEventsByTitle(anyString(), anyInt(), anyInt()))
                 .thenReturn(Collections.singletonList(event));
@@ -104,7 +104,7 @@ public class EventsControllerTest {
 
     @Test
     public void showEventsForDayWithCorrectDateFormatAndExistingDayShouldReturnModelAndViewWithListOfEvents() {
-        Event event = new Event(1L, "Test event", new Date(System.currentTimeMillis()), BigDecimal.ONE);
+        EventDto event = new EventDto(1L, "Test event", new Date(System.currentTimeMillis()), BigDecimal.ONE);
 
         when(bookingFacade.getEventsForDay(any(), anyInt(), anyInt())).thenReturn(Collections.singletonList(event));
 
@@ -152,7 +152,7 @@ public class EventsControllerTest {
 
     @Test
     public void createEventWithCorrectFormatOfDateShouldReturnModelAndViewWithEvent() {
-        Event event = new Event(1L, "Test event", new Date(System.currentTimeMillis()), BigDecimal.ONE);
+        EventDto event = new EventDto(1L, "Test event", new Date(System.currentTimeMillis()), BigDecimal.ONE);
 
         when(bookingFacade.createEvent(any())).thenReturn(event);
 
@@ -199,7 +199,7 @@ public class EventsControllerTest {
 
     @Test
     public void updateEventWithCorrectDateFormatShouldReturnModelAndViewWithEvent() {
-        Event event = new Event(1L, "Test event", new Date(System.currentTimeMillis()), BigDecimal.ONE);
+        EventDto event = new EventDto(1L, "Test event", new Date(System.currentTimeMillis()), BigDecimal.ONE);
 
         when(bookingFacade.updateEvent(any())).thenReturn(event);
 

@@ -1,44 +1,27 @@
 package ua.epam.mishchenko.ticketbooking.service.impl;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ua.epam.mishchenko.ticketbooking.dto.EventDto;
-import ua.epam.mishchenko.ticketbooking.repository.EventRepository;
+import ua.epam.mishchenko.ticketbooking.repository.mongo.EventMongoRepository;
 import ua.epam.mishchenko.ticketbooking.service.EventService;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-/**
- * The type Event service.
- */
-@Profile(value = "postgres")
+
+@Profile(value = "mongo")
+@Slf4j
 @Service
-public class EventServiceImpl implements EventService {
+@RequiredArgsConstructor
+public class EventMongoServiceImpl implements EventService {
 
-    /**
-     * The constant log.
-     */
-    private static final Logger log = LoggerFactory.getLogger(EventServiceImpl.class);
+    private final EventMongoRepository eventRepository;
 
-    /**
-     * The event repository.
-     */
-    private final EventRepository eventRepository;
-
-    /**
-     * Instantiates a new EventServiceImpl.
-     *
-     * @param eventRepository the event repository
-     */
-    public EventServiceImpl(EventRepository eventRepository) {
-        this.eventRepository = eventRepository;
-    }
 
     /**
      * Gets event by id.
@@ -50,10 +33,10 @@ public class EventServiceImpl implements EventService {
     public EventDto getEventById(long eventId) {
         log.info("Finding an event by id: {}", eventId);
         try {
-            var event = eventRepository.findById(eventId)
+            var event = eventRepository.findById(String.valueOf(eventId))
                     .orElseThrow(() -> new RuntimeException("Can not to find an event by id: " + eventId));
             log.info("Event with id {} successfully found ", eventId);
-            return EventDto.createFromSqlEvent(event);
+            return EventDto.createFromEventMongo(event);
         } catch (RuntimeException e) {
             log.warn("Can not to find an event by id: " + eventId);
             return null;
@@ -77,13 +60,18 @@ public class EventServiceImpl implements EventService {
                 log.warn("The title can not be empty");
                 return new ArrayList<>();
             }
-            Page<EventDto> eventsByTitle = eventRepository.getAllByTitle(PageRequest.of(pageNum - 1, pageSize), title);
-            if (!eventsByTitle.hasContent()) {
+
+            var eventsByTitle = eventRepository.getAllByTitle(PageRequest.of(pageNum - 1, pageSize), title)
+                    .getContent()
+                    .stream()
+                    .map(EventDto::createFromEventMongo)
+                    .toList();
+            if (eventsByTitle.isEmpty()) {
                 throw new RuntimeException("Can not to find a list of events by title: " + title);
             }
             log.info("All events successfully found by title {} with page size {} and number of page {}",
                     title, pageSize, pageNum);
-            return eventsByTitle.getContent();
+            return eventsByTitle;
         } catch (RuntimeException e) {
             log.warn("Can not to find a list of events by title {}", title, e);
             return new ArrayList<>();
@@ -107,14 +95,18 @@ public class EventServiceImpl implements EventService {
                 log.warn("The day can not be null");
                 return new ArrayList<>();
             }
-            Page<EventDto> eventsByTitle = eventRepository.getAllByDate(PageRequest.of(pageNum - 1, pageSize), day);
-            if (!eventsByTitle.hasContent()) {
+            var eventsByTitle = eventRepository.getAllByDate(PageRequest.of(pageNum - 1, pageSize), day)
+                    .getContent()
+                    .stream()
+                    .map(EventDto::createFromEventMongo)
+                    .toList();
+            if (eventsByTitle.isEmpty()) {
                 throw new RuntimeException("Can not to find a list of events for day: " + day);
             }
             log.info("All events successfully found for day {} with page size {} and number of page {}",
                     day, pageSize, pageNum);
 
-            return eventsByTitle.getContent();
+            return eventsByTitle;
         } catch (RuntimeException e) {
             log.warn("Can not to find a list of events for day {}", day, e);
             return new ArrayList<>();
@@ -139,9 +131,9 @@ public class EventServiceImpl implements EventService {
                 log.warn("These title and day are already exists for one event");
                 return null;
             }
-            var savedEvent = eventRepository.save(EventDto.buildEventFromEventDto(event));
+            var savedEvent = eventRepository.save(EventDto.buildEventMongoFromEventDto(event));
             log.info("Successfully creation of the event: {}", event);
-            return EventDto.createFromSqlEvent(savedEvent);
+            return EventDto.createFromEventMongo(savedEvent);
         } catch (RuntimeException e) {
             log.warn("Can not to create an event: {}", event, e);
             return null;
@@ -181,9 +173,9 @@ public class EventServiceImpl implements EventService {
             if (eventExistsByTitleAndDay(event)) {
                 throw new RuntimeException("These title and day are already exists for one event");
             }
-            var savedEvent = eventRepository.save(EventDto.buildEventFromEventDto(event));
+            var savedEvent = eventRepository.save(EventDto.buildEventMongoFromEventDto(event));
             log.info("Successfully updated of the event: {}", event);
-            return EventDto.createFromSqlEvent(savedEvent);
+            return EventDto.createFromEventMongo(savedEvent);
         } catch (RuntimeException e) {
             log.warn("Can not to update an event: {}", event, e);
             return null;
@@ -191,7 +183,7 @@ public class EventServiceImpl implements EventService {
     }
 
     private boolean eventExistsById(EventDto event) {
-        return eventRepository.existsById(Long.parseLong(event.getId()));
+        return eventRepository.existsById(event.getId());
     }
 
     /**
@@ -204,7 +196,7 @@ public class EventServiceImpl implements EventService {
     public boolean deleteEvent(long eventId) {
         log.info("Start deleting an event with id: {}", eventId);
         try {
-            eventRepository.deleteById(eventId);
+            eventRepository.deleteById(String.valueOf(eventId));
             log.info("Successfully deletion of the event with id: {}", eventId);
             return true;
         } catch (RuntimeException e) {

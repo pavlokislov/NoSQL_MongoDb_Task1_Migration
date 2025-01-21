@@ -5,8 +5,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
-import ua.epam.mishchenko.ticketbooking.model.mongo.Event;
-import ua.epam.mishchenko.ticketbooking.model.mongo.Ticket;
+import ua.epam.mishchenko.ticketbooking.model.Event;
+import ua.epam.mishchenko.ticketbooking.dto.EventDto;
+import ua.epam.mishchenko.ticketbooking.dto.TicketDto;
+import ua.epam.mishchenko.ticketbooking.model.Ticket;
+import ua.epam.mishchenko.ticketbooking.model.mongo.EventMongo;
+import ua.epam.mishchenko.ticketbooking.model.mongo.TicketMongo;
+import ua.epam.mishchenko.ticketbooking.model.mongo.UserAccountMongo;
+import ua.epam.mishchenko.ticketbooking.model.mongo.UserMongo;
 import ua.epam.mishchenko.ticketbooking.repository.EventRepository;
 import ua.epam.mishchenko.ticketbooking.service.DatabaseMigrationService;
 
@@ -35,39 +41,43 @@ public class DataMigrationServiceImpl implements DatabaseMigrationService {
         log.info("Start of database migration");
         Iterable<ua.epam.mishchenko.ticketbooking.model.Event> events = eventRepository.findAll();
 
-        List<Event> mongoEvents = new ArrayList<>();
+        List<EventMongo> mongoEvents = new ArrayList<>();
 
         events.forEach(event -> {
-            Event mongoEvent = makeMongoEvent(event);
+            EventMongo mongoEvent = makeMongoEvent(event);
             mongoEvents.add(mongoEvent);
+            mongoTemplate.save(mongoEvent, "events");
         });
         //here save in Db don't work
-        mongoTemplate.insert(mongoEvents, "events");
         log.info("End of database migration");
 
     }
 
-    private Event makeMongoEvent(ua.epam.mishchenko.ticketbooking.model.Event event) {
-        Event mongoEvent = new Event();
-        mongoEvent.setTitle(event.getTitle());
-        mongoEvent.setTicketPrice(event.getTicketPrice());
-        mongoEvent.setDate(event.getDate());
+    private EventMongo makeMongoEvent(Event sqlEvent) {
+        EventMongo mongoEvent = new EventMongo();
+        mongoEvent.setTitle(sqlEvent.getTitle());
+        mongoEvent.setTicketPrice(sqlEvent.getTicketPrice());
+        mongoEvent.setDate(sqlEvent.getDate());
+        mongoEvent.setTicketPrice(sqlEvent.getTicketPrice());
+        mongoTemplate.insert(mongoEvent, "events");
 
-        var mongoTickets = event.getTickets().stream()
-                .map(this::makeMongoTicket)
+        var mongoTickets = sqlEvent.getTickets().stream()
+                .map(sqlTicket -> makeMongoTicket(sqlTicket, mongoEvent))
                 .toList();
 
+        mongoTemplate.insert(mongoTickets, "tickets");
         mongoEvent.setTickets(mongoTickets);
         return mongoEvent;
     }
 
-    private Ticket makeMongoTicket(ua.epam.mishchenko.ticketbooking.model.Ticket ticket) {
-        var mongoTicket = new Ticket();
-        mongoTicket.setPlace(ticket.getPlace());
-        mongoTicket.setCategory(ticket.getCategory());
+    private TicketMongo makeMongoTicket(Ticket sqlTicket, EventMongo event) {
+        var mongoTicket = new TicketMongo();
+        mongoTicket.setEvent(event);
+        mongoTicket.setPlace(sqlTicket.getPlace());
+        mongoTicket.setCategory(sqlTicket.getCategory());
 
-        var user = ticket.getUser();
-        var mongoUser = new ua.epam.mishchenko.ticketbooking.model.mongo.User();
+        var user = sqlTicket.getUser();
+        var mongoUser = new UserMongo();
         mongoUser.setName(user.getName());
         mongoUser.setEmail(user.getEmail());
 
@@ -75,11 +85,11 @@ public class DataMigrationServiceImpl implements DatabaseMigrationService {
 
         var userAccount = Optional.ofNullable(user.getUserAccount());
         if (userAccount.isPresent()) {
-            var mongoUserAccount = new ua.epam.mishchenko.ticketbooking.model.mongo.UserAccount();
+            var mongoUserAccount = new UserAccountMongo();
             mongoUserAccount.setMoney(userAccount.get().getMoney());
             mongoUser.setUserAccount(mongoUserAccount);
         }
-
+        mongoTemplate.insert(mongoUser, "users");
         return mongoTicket;
     }
 }

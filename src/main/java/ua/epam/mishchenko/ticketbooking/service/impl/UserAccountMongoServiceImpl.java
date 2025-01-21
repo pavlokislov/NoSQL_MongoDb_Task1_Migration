@@ -1,31 +1,27 @@
 package ua.epam.mishchenko.ticketbooking.service.impl;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import ua.epam.mishchenko.ticketbooking.dto.UserAccountDTO;
-import ua.epam.mishchenko.ticketbooking.model.UserAccount;
-import ua.epam.mishchenko.ticketbooking.repository.UserAccountRepository;
-import ua.epam.mishchenko.ticketbooking.repository.UserRepository;
+import ua.epam.mishchenko.ticketbooking.model.mongo.UserAccountMongo;
+import ua.epam.mishchenko.ticketbooking.model.mongo.UserMongo;
+import ua.epam.mishchenko.ticketbooking.repository.mongo.UserAccountCustomMongoRepository;
+import ua.epam.mishchenko.ticketbooking.repository.mongo.UserMongoRepository;
 import ua.epam.mishchenko.ticketbooking.service.UserAccountService;
 
 import java.math.BigDecimal;
 
-@Profile(value = "postgres")
+@Profile(value = "mongo")
+@Slf4j
 @Service
-public class UserAccountServiceImpl implements UserAccountService {
+@RequiredArgsConstructor
+public class UserAccountMongoServiceImpl implements UserAccountService {
 
-    private static final Logger log = LoggerFactory.getLogger(UserAccountServiceImpl.class);
+    private final UserMongoRepository userRepository;
 
-    private final UserRepository userRepository;
-
-    private final UserAccountRepository userAccountRepository;
-
-    public UserAccountServiceImpl(UserRepository userRepository, UserAccountRepository userAccountRepository) {
-        this.userRepository = userRepository;
-        this.userAccountRepository = userAccountRepository;
-    }
+    private final UserAccountCustomMongoRepository userAccountRepository;
 
     @Override
     public UserAccountDTO refillAccount(long userId, BigDecimal money) {
@@ -33,10 +29,10 @@ public class UserAccountServiceImpl implements UserAccountService {
         try {
             thrownRuntimeExceptionIfMoneyLessZero(money);
             throwRuntimeExceptionIfUserNotExist(userId);
-            UserAccount userAccount = getUserAccountAndRefillIfNotExistCreate(userId, money);
-            userAccount = userAccountRepository.save(userAccount);
+            var user = getUserAndRefillIfNotExistCreate(userId, money);
+            user = userRepository.save(user);
             log.info("The user account with user id {} successfully refilled", userId);
-            return new UserAccountDTO(userAccount.getMoney());
+            return new UserAccountDTO(user.getUserAccount().getMoney());
         } catch (RuntimeException e) {
             log.warn("Can not to refill account with user id: {}", userId);
             return null;
@@ -49,28 +45,31 @@ public class UserAccountServiceImpl implements UserAccountService {
         }
     }
 
-    private UserAccount getUserAccountAndRefillIfNotExistCreate(long userId, BigDecimal money) {
-        UserAccount userAccount = userAccountRepository.findById(userId).orElse(null);
+    private UserMongo getUserAndRefillIfNotExistCreate(long userId, BigDecimal money) {
+        var userAccount = userAccountRepository.findByUserId(String.valueOf(userId)).orElse(null);
         if (userAccount == null) {
             return createNewUserAccount(userId, money);
         }
         BigDecimal money1 = userAccount.getMoney();
         userAccount.setMoney(money1.add(money));
-        return userAccount;
+        UserMongo userMongo = userRepository.findById(String.valueOf(userId)).get();
+        userMongo.setUserAccount(userAccount);
+        return userMongo;
     }
 
-    private UserAccount createNewUserAccount(long userId, BigDecimal money) {
+    private UserMongo createNewUserAccount(long userId, BigDecimal money) {
         log.info("The user account with user id {} does not exist", userId);
         log.info("Creating new user account for user with id {}", userId);
-        UserAccount userAccount = new UserAccount();
-        userAccount.setUser(userRepository.findById(userId).get());
+        var userAccount = new UserAccountMongo();
         userAccount.setMoney(money);
+        UserMongo userMongo = userRepository.findById(String.valueOf(userId)).get();
+        userMongo.setUserAccount(userAccount);
         log.info("The user account for user with id {} successfully created", userId);
-        return userAccount;
+        return userMongo;
     }
 
     private void throwRuntimeExceptionIfUserNotExist(long userId) {
-        if (!userRepository.existsById(userId)) {
+        if (!userRepository.existsById(String.valueOf(userId))) {
             throw new RuntimeException("The user with id " + userId + " does not exist");
         }
     }

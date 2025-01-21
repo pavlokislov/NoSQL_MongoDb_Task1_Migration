@@ -10,11 +10,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+import ua.epam.mishchenko.ticketbooking.dto.EventDto;
+import ua.epam.mishchenko.ticketbooking.dto.TicketDto;
+import ua.epam.mishchenko.ticketbooking.dto.UserDto;
 import ua.epam.mishchenko.ticketbooking.facade.impl.BookingFacadeImpl;
 import ua.epam.mishchenko.ticketbooking.model.Category;
-import ua.epam.mishchenko.ticketbooking.model.Event;
-import ua.epam.mishchenko.ticketbooking.model.Ticket;
-import ua.epam.mishchenko.ticketbooking.model.User;
+
 
 import java.util.HashMap;
 import java.util.List;
@@ -62,7 +63,7 @@ public class TicketsController {
                                    @RequestParam Category category) {
         log.info("Booking a ticket: userId={}, eventId={}, place={}, category={}", userId, eventId, place, category);
         Map<String, Object> model = new HashMap<>();
-        Ticket ticket = bookingFacade.bookTicket(userId, eventId, place, category);
+        TicketDto ticket = bookingFacade.bookTicket(userId, eventId, place, category);
         if (isNull(ticket)) {
             model.put("message", "Can not to book a ticket");
             log.info("Can not to book a ticket: userId={}, eventId={}, place={}, category={}",
@@ -98,12 +99,12 @@ public class TicketsController {
                                           @RequestParam int pageNum) {
         log.info("Showing the tickets by user with id: {}", userId);
         Map<String, Object> model = new HashMap<>();
-        User userById = bookingFacade.getUserById(userId);
+        UserDto userById = bookingFacade.getUserById(userId);
         if (isNull(userById)) {
             model.put("message", "Can not to find a user by id: " + userId);
             log.info("Can not to find a user by id: {}", userId);
         } else {
-            List<Ticket> bookedTickets = bookingFacade.getBookedTickets(userById, pageSize, pageNum);
+            List<TicketDto> bookedTickets = bookingFacade.getBookedTickets(userById, pageSize, pageNum);
             if (bookedTickets.isEmpty()) {
                 model.put("message", "Can not to find the tickets by user with id: " + userId);
                 log.info("Can not to find the tickets by user with id: {}", userId);
@@ -129,12 +130,12 @@ public class TicketsController {
                                            @RequestParam int pageNum) {
         log.info("Showing the tickets by event with id: {}", eventId);
         Map<String, Object> model = new HashMap<>();
-        Event eventById = bookingFacade.getEventById(eventId);
+        EventDto eventById = bookingFacade.getEventById(eventId);
         if (isNull(eventById)) {
             model.put("message", "Can not to find an event by id: " + eventId);
             log.info("Can not to find an event by id: {}", eventId);
         } else {
-            List<Ticket> bookedTickets = bookingFacade.getBookedTickets(eventById, pageSize, pageNum);
+            List<TicketDto> bookedTickets = bookingFacade.getBookedTickets(eventById, pageSize, pageNum);
             if (bookedTickets.isEmpty()) {
                 model.put("message", "Can not to find the tickets by event with id: " + eventId);
                 log.info("Can not to find the tickets by event with id: {}", eventId);

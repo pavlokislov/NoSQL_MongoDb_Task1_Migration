@@ -1,5 +1,7 @@
 
 spring:
+  profiles:
+    active: mongo
   jpa:
     properties:
       hibernate:
@@ -29,8 +31,7 @@ spring:
     driver-class-name: org.postgresql.Driver
 
 properties:
-  migration_enabled: true
-  main_db: mongo
+  migration_enabled: false
 
 logging:
   level:

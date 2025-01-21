@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import ua.epam.mishchenko.ticketbooking.facade.impl.BookingFacadeImpl;
-import ua.epam.mishchenko.ticketbooking.model.User;
+import ua.epam.mishchenko.ticketbooking.dto.UserDto;
 
 import java.util.HashMap;
 import java.util.List;
@@ -54,7 +54,7 @@ public class UsersController {
     public ModelAndView showUserById(@PathVariable long id) {
         log.info("Showing user by id: {}", id);
         Map<String, Object> model = new HashMap<>();
-        User userById = bookingFacade.getUserById(id);
+        UserDto userById = bookingFacade.getUserById(id);
         if (isNull(userById)) {
             model.put("message", "Can not to find user by id: " + id);
             log.info("Can not to find user by id: {}", id);
@@ -71,7 +71,7 @@ public class UsersController {
      * @param user the user
      * @return the boolean
      */
-    private boolean isNull(User user) {
+    private boolean isNull(UserDto user) {
         return user == null;
     }
 
@@ -89,7 +89,7 @@ public class UsersController {
                                         @RequestParam int pageNum) {
         log.info("Showing users by name: {}", name);
         Map<String, Object> model = new HashMap<>();
-        List<User> usersByName = bookingFacade.getUsersByName(name, pageSize, pageNum);
+        List<UserDto> usersByName = bookingFacade.getUsersByName(name, pageSize, pageNum);
         if (usersByName.isEmpty()) {
             model.put("message", "Can not to find users by name: " + name);
             log.info("Can not to find users by name: {}", name);
@@ -110,7 +110,7 @@ public class UsersController {
     public ModelAndView showUserByEmail(@PathVariable String email) {
         log.info("Showing the user by email: {}", email);
         Map<String, Object> model = new HashMap<>();
-        User userByEmail = bookingFacade.getUserByEmail(email);
+        UserDto userByEmail = bookingFacade.getUserByEmail(email);
         if (isNull(userByEmail)) {
             model.put("message", "Can not to find user by email: " + email);
             log.info("Can not to find user by email: {}", email);
@@ -133,7 +133,7 @@ public class UsersController {
                                    @RequestParam String email) {
         log.info("Creating user with name={} and email={}", name, email);
         Map<String, Object> model = new HashMap<>();
-        User user = bookingFacade.createUser(createUserEntityWithoutId(name, email));
+        UserDto user = bookingFacade.createUser(createUserEntityWithoutId(name, email));
         if (isNull(user)) {
             model.put("message",
                     "Can not to create user with name - " + name + " and email - " + email);
@@ -152,11 +152,11 @@ public class UsersController {
      * @param email the email
      * @return the user
      */
-    private User createUserEntityWithoutId(String name, String email) {
-        User user = new User();
-        user.setName(name);
-        user.setEmail(email);
-        return user;
+    private UserDto createUserEntityWithoutId(String name, String email) {
+        UserDto userDto = new UserDto();
+        userDto.setName(name);
+        userDto.setEmail(email);
+        return userDto;
     }
 
     /**
@@ -173,7 +173,7 @@ public class UsersController {
                                    @RequestParam String email) {
         log.info("Updating user with id: {}", id);
         Map<String, Object> model = new HashMap<>();
-        User user = bookingFacade.updateUser(createUserEntityWithId(id, name, email));
+        UserDto user = bookingFacade.updateUser(createUserEntityWithId(String.valueOf(id), name, email));
         if (isNull(user)) {
             model.put("message", "Can not to update user with id: " + id);
             log.info("Can not to update user with id: {}", id);
@@ -192,8 +192,8 @@ public class UsersController {
      * @param email the email
      * @return the user
      */
-    private User createUserEntityWithId(long id, String name, String email) {
-        User user = createUserEntityWithoutId(name, email);
+    private UserDto createUserEntityWithId(String id, String name, String email) {
+        UserDto user = createUserEntityWithoutId(name, email);
         user.setId(id);
         return user;
     }

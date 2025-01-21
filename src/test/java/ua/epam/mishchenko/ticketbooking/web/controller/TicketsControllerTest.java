@@ -8,9 +8,9 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.servlet.ModelAndView;
 import ua.epam.mishchenko.ticketbooking.facade.impl.BookingFacadeImpl;
 import ua.epam.mishchenko.ticketbooking.model.Category;
-import ua.epam.mishchenko.ticketbooking.model.Event;
-import ua.epam.mishchenko.ticketbooking.model.Ticket;
-import ua.epam.mishchenko.ticketbooking.model.User;
+import ua.epam.mishchenko.ticketbooking.dto.EventDto;
+import ua.epam.mishchenko.ticketbooking.dto.TicketDto;
+import ua.epam.mishchenko.ticketbooking.dto.UserDto;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,7 +41,7 @@ public class TicketsControllerTest {
 
     @Test
     public void bookTicketWithCorrectParametersShouldReturnModelAndViewWithBookedTicket() {
-        Ticket ticket = new Ticket();
+        TicketDto ticket = new TicketDto();
 
         when(bookingFacade.bookTicket(anyLong(), anyLong(), anyInt(), any())).thenReturn(ticket);
 
@@ -79,7 +79,7 @@ public class TicketsControllerTest {
         ModelAndView actualModelAndView = ticketsController.showTicketsByUser(1L, 1, 1);
 
         verify(bookingFacade, times(1)).getUserById(anyLong());
-        verify(bookingFacade, times(0)).getBookedTickets(any(User.class), anyInt(), anyInt());
+        verify(bookingFacade, times(0)).getBookedTickets(any(UserDto.class), anyInt(), anyInt());
 
         ModelMap actualModelMap = actualModelAndView.getModelMap();
 
@@ -91,13 +91,13 @@ public class TicketsControllerTest {
 
     @Test
     public void showTicketsByUserWithExistingUserIdShouldReturnModelAndViewWithMessage() {
-        when(bookingFacade.getUserById(anyLong())).thenReturn(new User());
-        when(bookingFacade.getBookedTickets(any(User.class), anyInt(), anyInt())).thenReturn(new ArrayList<>());
+        when(bookingFacade.getUserById(anyLong())).thenReturn(new UserDto());
+        when(bookingFacade.getBookedTickets(any(UserDto.class), anyInt(), anyInt())).thenReturn(new ArrayList<>());
 
         ModelAndView actualModelAndView = ticketsController.showTicketsByUser(1L, 1, 1);
 
         verify(bookingFacade, times(1)).getUserById(anyLong());
-        verify(bookingFacade, times(1)).getBookedTickets(any(User.class), anyInt(), anyInt());
+        verify(bookingFacade, times(1)).getBookedTickets(any(UserDto.class), anyInt(), anyInt());
 
         ModelMap actualModelMap = actualModelAndView.getModelMap();
 
@@ -109,14 +109,14 @@ public class TicketsControllerTest {
 
     @Test
     public void showTicketsByUserWithExistingUserIdShouldReturnModelAndViewWithListOfBookedTickets() {
-        when(bookingFacade.getUserById(anyLong())).thenReturn(new User());
-        when(bookingFacade.getBookedTickets(any(User.class), anyInt(), anyInt()))
-                .thenReturn(Collections.singletonList(new Ticket()));
+        when(bookingFacade.getUserById(anyLong())).thenReturn(new UserDto());
+        when(bookingFacade.getBookedTickets(any(UserDto.class), anyInt(), anyInt()))
+                .thenReturn(Collections.singletonList(new TicketDto()));
 
         ModelAndView actualModelAndView = ticketsController.showTicketsByUser(1L, 1, 1);
 
         verify(bookingFacade, times(1)).getUserById(anyLong());
-        verify(bookingFacade, times(1)).getBookedTickets(any(User.class), anyInt(), anyInt());
+        verify(bookingFacade, times(1)).getBookedTickets(any(UserDto.class), anyInt(), anyInt());
 
         ModelMap actualModelMap = actualModelAndView.getModelMap();
 
@@ -132,7 +132,7 @@ public class TicketsControllerTest {
         ModelAndView actualModelAndView = ticketsController.showTicketsByEvent(1L, 1, 1);
 
         verify(bookingFacade, times(1)).getEventById(anyLong());
-        verify(bookingFacade, times(0)).getBookedTickets(any(Event.class), anyInt(), anyInt());
+        verify(bookingFacade, times(0)).getBookedTickets(any(EventDto.class), anyInt(), anyInt());
 
         ModelMap actualModelMap = actualModelAndView.getModelMap();
 
@@ -144,13 +144,13 @@ public class TicketsControllerTest {
 
     @Test
     public void showTicketsByEventWithExistingEventIdShouldReturnModelAndViewWithMessage() {
-        when(bookingFacade.getEventById(anyLong())).thenReturn(new Event());
-        when(bookingFacade.getBookedTickets(any(Event.class), anyInt(), anyInt())).thenReturn(new ArrayList<>());
+        when(bookingFacade.getEventById(anyLong())).thenReturn(new EventDto());
+        when(bookingFacade.getBookedTickets(any(EventDto.class), anyInt(), anyInt())).thenReturn(new ArrayList<>());
 
         ModelAndView actualModelAndView = ticketsController.showTicketsByEvent(1L, 1, 1);
 
         verify(bookingFacade, times(1)).getEventById(anyLong());
-        verify(bookingFacade, times(1)).getBookedTickets(any(Event.class), anyInt(), anyInt());
+        verify(bookingFacade, times(1)).getBookedTickets(any(EventDto.class), anyInt(), anyInt());
 
         ModelMap actualModelMap = actualModelAndView.getModelMap();
 
@@ -162,14 +162,14 @@ public class TicketsControllerTest {
 
     @Test
     public void showTicketsByEventWithExistingEventIdShouldReturnModelAndViewWithListOfBookedTickets() {
-        when(bookingFacade.getEventById(anyLong())).thenReturn(new Event());
-        when(bookingFacade.getBookedTickets(any(Event.class), anyInt(), anyInt()))
-                .thenReturn(Collections.singletonList(new Ticket()));
+        when(bookingFacade.getEventById(anyLong())).thenReturn(new EventDto());
+        when(bookingFacade.getBookedTickets(any(EventDto.class), anyInt(), anyInt()))
+                .thenReturn(Collections.singletonList(new TicketDto()));
 
         ModelAndView actualModelAndView = ticketsController.showTicketsByEvent(1L, 1, 1);
 
         verify(bookingFacade, times(1)).getEventById(anyLong());
-        verify(bookingFacade, times(1)).getBookedTickets(any(Event.class), anyInt(), anyInt());
+        verify(bookingFacade, times(1)).getBookedTickets(any(EventDto.class), anyInt(), anyInt());
 
         ModelMap actualModelMap = actualModelAndView.getModelMap();
 

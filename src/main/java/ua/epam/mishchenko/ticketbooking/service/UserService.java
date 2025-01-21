@@ -1,6 +1,6 @@
 package ua.epam.mishchenko.ticketbooking.service;
 
-import ua.epam.mishchenko.ticketbooking.model.User;
+import ua.epam.mishchenko.ticketbooking.dto.UserDto;
 
 import java.util.List;
 
@@ -15,7 +15,7 @@ public interface UserService {
      * @param userId the user id
      * @return the user by id
      */
-    User getUserById(long userId);
+    UserDto getUserById(long userId);
 
     /**
      * Gets user by email.
@@ -23,7 +23,7 @@ public interface UserService {
      * @param email the email
      * @return the user by email
      */
-    User getUserByEmail(String email);
+    UserDto getUserByEmail(String email);
 
     /**
      * Gets users by name.
@@ -33,7 +33,7 @@ public interface UserService {
      * @param pageNum  the page num
      * @return the users by name
      */
-    List<User> getUsersByName(String name, int pageSize, int pageNum);
+    List<UserDto> getUsersByName(String name, int pageSize, int pageNum);
 
     /**
      * Create user user.
@@ -41,7 +41,7 @@ public interface UserService {
      * @param user the user
      * @return the user
      */
-    User createUser(User user);
+    UserDto createUser(UserDto user);
 
     /**
      * Update user user.
@@ -49,7 +49,7 @@ public interface UserService {
      * @param user the user
      * @return the user
      */
-    User updateUser(User user);
+    UserDto updateUser(UserDto user);
 
     /**
      * Delete user boolean.

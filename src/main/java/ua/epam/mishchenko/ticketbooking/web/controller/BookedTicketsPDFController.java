@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import ua.epam.mishchenko.ticketbooking.dto.TicketDto;
+import ua.epam.mishchenko.ticketbooking.dto.UserDto;
 import ua.epam.mishchenko.ticketbooking.facade.impl.BookingFacadeImpl;
-import ua.epam.mishchenko.ticketbooking.model.Ticket;
-import ua.epam.mishchenko.ticketbooking.model.User;
 import ua.epam.mishchenko.ticketbooking.utils.PDFUtils;
 
 import java.nio.file.Path;
@@ -68,8 +68,8 @@ public class BookedTicketsPDFController {
                                                             @RequestParam int pageNum) {
         log.info("Showing the tickets by user with id: {}", userId);
 
-        User userById = getUserById(userId);
-        List<Ticket> bookedTickets = getBookedTickets(userId, pageSize, pageNum, userById);
+        UserDto userById = getUserById(userId);
+        List<TicketDto> bookedTickets = getBookedTickets(userId, pageSize, pageNum, userById);
 
         log.info("The tickets successfully found");
 
@@ -82,8 +82,8 @@ public class BookedTicketsPDFController {
      * @param userId the user id
      * @return the user by id
      */
-    private User getUserById(long userId) {
-        User userById = bookingFacade.getUserById(userId);
+    private UserDto getUserById(long userId) {
+        UserDto userById = bookingFacade.getUserById(userId);
         if (isNull(userById)) {
             log.info("Can not to find a user by id: {}", userId);
             throw new RuntimeException("Can not to find a user by id: " + userId);
@@ -100,8 +100,8 @@ public class BookedTicketsPDFController {
      * @param userById the user by id
      * @return the booked tickets
      */
-    private List<Ticket> getBookedTickets(long userId, int pageSize, int pageNum, User userById) {
-        List<Ticket> bookedTickets = bookingFacade.getBookedTickets(userById, pageSize, pageNum);
+    private List<TicketDto> getBookedTickets(long userId, int pageSize, int pageNum, UserDto userById) {
+        List<TicketDto> bookedTickets = bookingFacade.getBookedTickets(userById, pageSize, pageNum);
         if (bookedTickets.isEmpty()) {
             log.info("Can not to find the tickets by user with id: {}", userId);
             throw new RuntimeException("Can not to find the tickets by user with id: " + userId);
@@ -115,7 +115,7 @@ public class BookedTicketsPDFController {
      * @param bookedTickets the booked tickets
      * @return the response entity
      */
-    private ResponseEntity<Object> createResponseEntityWithPDFDocument(List<Ticket> bookedTickets) {
+    private ResponseEntity<Object> createResponseEntityWithPDFDocument(List<TicketDto> bookedTickets) {
         createPDFDocument(bookedTickets);
         InputStreamResource pdfDocument = pdfUtils.getPDFDocument();
         pdfUtils.deletePDFDocument();
@@ -127,7 +127,7 @@ public class BookedTicketsPDFController {
      *
      * @param bookedTickets the booked tickets
      */
-    private void createPDFDocument(List<Ticket> bookedTickets) {
+    private void createPDFDocument(List<TicketDto> bookedTickets) {
         Path path = Paths.get("Booked Tickets.pdf");
         pdfUtils.setTickets(bookedTickets);
         pdfUtils.setPath(path);

@@ -10,7 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Component;
-import ua.epam.mishchenko.ticketbooking.model.Ticket;
+import ua.epam.mishchenko.ticketbooking.dto.TicketDto;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,7 +34,7 @@ public class PDFUtils {
     /**
      * The Tickets.
      */
-    private List<Ticket> tickets;
+    private List<TicketDto> tickets;
 
     /**
      * The Path.
@@ -135,7 +135,7 @@ public class PDFUtils {
      * @param table the table
      */
     private void insertDataInTable(PdfPTable table) {
-        for (Ticket ticket : tickets) {
+        for (TicketDto ticket : tickets) {
             createAndAddCells(table,
                     String.valueOf(ticket.getId()),
                     String.valueOf(ticket.getUser().getId()),
@@ -164,7 +164,7 @@ public class PDFUtils {
      *
      * @param tickets the tickets
      */
-    public void setTickets(List<Ticket> tickets) {
+    public void setTickets(List<TicketDto> tickets) {
         this.tickets = tickets;
     }
 

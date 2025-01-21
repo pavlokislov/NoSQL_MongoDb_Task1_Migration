@@ -1,65 +1,41 @@
 package ua.epam.mishchenko.ticketbooking.service.impl;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ua.epam.mishchenko.ticketbooking.dto.UserDto;
-import ua.epam.mishchenko.ticketbooking.model.User;
-import ua.epam.mishchenko.ticketbooking.repository.UserRepository;
+import ua.epam.mishchenko.ticketbooking.model.mongo.UserMongo;
+import ua.epam.mishchenko.ticketbooking.repository.mongo.UserMongoRepository;
 import ua.epam.mishchenko.ticketbooking.service.UserService;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * The type User service.
- */
-@Profile(value = "postgres")
+@Slf4j
+@Profile(value = "mongo")
 @Service
-public class UserServiceImpl implements UserService {
+@RequiredArgsConstructor
+public class UserMongoServiceImpl implements UserService {
 
-    /**
-     * The constant log.
-     */
-    private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
+    private final UserMongoRepository userRepository;
 
-    /**
-     * The User repository.
-     */
-    private final UserRepository userRepository;
-
-    public UserServiceImpl(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
-
-    /**
-     * Gets user by id.
-     *
-     * @param userId the user id
-     * @return the user by id
-     */
     @Override
     public UserDto getUserById(long userId) {
         log.info("Finding a user by id: {}", userId);
         try {
-            User user = userRepository.findById(userId)
+            UserMongo user = userRepository.findById(String.valueOf(userId))
                     .orElseThrow(() -> new RuntimeException("Can not to get a user by id: " + userId));
             log.info("The user with id {} successfully found ", userId);
-            return UserDto.buildFromSqlUser(user);
+            return UserDto.buildFromMongoUser(user);
         } catch (RuntimeException e) {
             log.warn("Can not to get an user by id: " + userId);
             return null;
         }
     }
 
-    /**
-     * Gets user by email.
-     *
-     * @param email the email
-     * @return the user by email
-     */
     @Override
     public UserDto getUserByEmail(String email) {
         log.info("Finding a user by email: {}", email);
@@ -71,21 +47,13 @@ public class UserServiceImpl implements UserService {
             var user = userRepository.getByEmail(email)
                     .orElseThrow(() -> new RuntimeException("Can not to get an user by email: " + email));
             log.info("The user with email {} successfully found ", email);
-            return user;
+            return UserDto.buildFromMongoUser(user);
         } catch (RuntimeException e) {
             log.warn("Can not to get an user by email: " + email);
             return null;
         }
     }
 
-    /**
-     * Gets users by name.
-     *
-     * @param name     the name
-     * @param pageSize the page size
-     * @param pageNum  the page num
-     * @return the users by name
-     */
     @Override
     public List<UserDto> getUsersByName(String name, int pageSize, int pageNum) {
         log.info("Finding all users by name {} with page size {} and number of page {}", name, pageSize, pageNum);
@@ -100,19 +68,16 @@ public class UserServiceImpl implements UserService {
             }
             log.info("All users successfully found by name {} with page size {} and number of page {}",
                     name, pageSize, pageNum);
-            return usersByName.getContent();
+            return usersByName.getContent()
+                    .stream()
+                    .map(UserDto::buildFromMongoUser)
+                    .toList();
         } catch (RuntimeException e) {
             log.warn("Can not to find a list of users by name '{}'", name, e);
             return new ArrayList<>();
         }
     }
 
-    /**
-     * Create user.
-     *
-     * @param user the user
-     * @return the user
-     */
     @Override
     public UserDto createUser(UserDto user) {
         log.info("Start creating an user: {}", user);
@@ -125,17 +90,18 @@ public class UserServiceImpl implements UserService {
                 log.debug("This email already exists");
             }
 
-            var savedUser = userRepository.save(UserDto.toSqlUser(user));
+            var savedUser = userRepository.save(UserDto.toMongoUser(user));
             log.info("Successfully updating of the user: {}", user);
-            return UserDto.buildFromSqlUser(savedUser);
+            return UserDto.buildFromMongoUser(savedUser);
         } catch (RuntimeException e) {
             log.warn("Can not to create an user: {}", user, e);
             return null;
         }
     }
 
+
     private boolean userExistsById(UserDto user) {
-        return userRepository.existsById(Long.parseLong(user.getId()));
+        return userRepository.existsById(user.getId());
     }
 
     private boolean userExistsByEmail(UserDto user) {
@@ -152,12 +118,6 @@ public class UserServiceImpl implements UserService {
         return user == null;
     }
 
-    /**
-     * Update user user.
-     *
-     * @param user the user
-     * @return the user
-     */
     @Override
     public UserDto updateUser(UserDto user) {
         log.info("Start updating an user: {}", user);
@@ -173,31 +133,17 @@ public class UserServiceImpl implements UserService {
                 throw new RuntimeException("This email already exists");
             }
 
-            var savedUser = userRepository.save(UserDto.toSqlUser(user));
+            var savedUser = userRepository.save(UserDto.toMongoUser(user));
             log.info("Successfully updating of the user: {}", user);
-            return UserDto.buildFromSqlUser(savedUser);
+            return UserDto.buildFromMongoUser(savedUser);
         } catch (RuntimeException e) {
             log.warn("Can not to update an user: {}", user, e);
             return null;
         }
     }
 
-    /**
-     * Delete user boolean.
-     *
-     * @param userId the user id
-     * @return the boolean
-     */
     @Override
     public boolean deleteUser(long userId) {
-        log.info("Start deleting an user with id: {}", userId);
-        try {
-            userRepository.deleteById(userId);
-            log.info("Successfully deletion of the user with id: {}", userId);
-            return true;
-        } catch (RuntimeException e) {
-            log.warn("Can not to delete an user with id: {}", userId, e);
-            return false;
-        }
+        return false;
     }
 }
