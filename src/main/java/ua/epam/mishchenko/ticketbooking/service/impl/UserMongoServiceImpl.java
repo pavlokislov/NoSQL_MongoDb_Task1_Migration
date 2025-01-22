@@ -29,7 +29,7 @@ public class UserMongoServiceImpl implements UserService {
             UserMongo user = userRepository.findById(userId)
                     .orElseThrow(() -> new RuntimeException("Can not to get a user by id: " + userId));
             log.info("The user with id {} successfully found ", userId);
-            return UserDto.buildFromMongoUser(user);
+            return UserDto.fromUserMongoToUserDto(user);
         } catch (RuntimeException e) {
             log.warn("Can not to get an user by id: " + userId);
             return null;
@@ -47,7 +47,7 @@ public class UserMongoServiceImpl implements UserService {
             var user = userRepository.getByEmail(email)
                     .orElseThrow(() -> new RuntimeException("Can not to get an user by email: " + email));
             log.info("The user with email {} successfully found ", email);
-            return UserDto.buildFromMongoUser(user);
+            return UserDto.fromUserMongoToUserDto(user);
         } catch (RuntimeException e) {
             log.warn("Can not to get an user by email: " + email);
             return null;
@@ -70,7 +70,7 @@ public class UserMongoServiceImpl implements UserService {
                     name, pageSize, pageNum);
             return usersByName.getContent()
                     .stream()
-                    .map(UserDto::buildFromMongoUser)
+                    .map(UserDto::fromUserMongoToUserDto)
                     .toList();
         } catch (RuntimeException e) {
             log.warn("Can not to find a list of users by name '{}'", name, e);
@@ -90,9 +90,9 @@ public class UserMongoServiceImpl implements UserService {
                 log.debug("This email already exists");
             }
 
-            var savedUser = userRepository.save(UserDto.toMongoUser(user));
+            var savedUser = userRepository.save(UserDto.fromUserDtotoUserMongo(user));
             log.info("Successfully updating of the user: {}", user);
-            return UserDto.buildFromMongoUser(savedUser);
+            return UserDto.fromUserMongoToUserDto(savedUser);
         } catch (RuntimeException e) {
             log.warn("Can not to create an user: {}", user, e);
             return null;
@@ -133,9 +133,9 @@ public class UserMongoServiceImpl implements UserService {
                 throw new RuntimeException("This email already exists");
             }
 
-            var savedUser = userRepository.save(UserDto.toMongoUser(user));
+            var savedUser = userRepository.save(UserDto.fromUserDtotoUserMongo(user));
             log.info("Successfully updating of the user: {}", user);
-            return UserDto.buildFromMongoUser(savedUser);
+            return UserDto.fromUserMongoToUserDto(savedUser);
         } catch (RuntimeException e) {
             log.warn("Can not to update an user: {}", user, e);
             return null;

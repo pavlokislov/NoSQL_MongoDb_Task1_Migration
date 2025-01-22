@@ -32,8 +32,8 @@ public class TicketDto {
     public static TicketDto fromSqlTicket(Ticket ticket) {
         TicketDto ticketDto = new TicketDto();
         ticketDto.setId(String.valueOf(ticket.getId()));
-        ticketDto.setUser(UserDto.buildFromSqlUser(ticket.getUser()));
-        ticketDto.setEvent(EventDto.createFromSqlEvent(ticket.getEvent()));
+        ticketDto.setUser(UserDto.fromUserToUserDto(ticket.getUser()));
+        ticketDto.setEvent(EventDto.fromSqlEventToEventDto(ticket.getEvent()));
         ticketDto.setPlace(ticket.getPlace());
         ticketDto.setCategory(ticket.getCategory());
         return ticketDto;
@@ -42,8 +42,8 @@ public class TicketDto {
     public static TicketDto fromMongoTicket(TicketMongo ticket, EventMongo event, UserMongo user) {
         TicketDto ticketDto = new TicketDto();
         ticketDto.setId(String.valueOf(ticket.getId()));
-        ticketDto.setUser(UserDto.buildFromMongoUser(user));
-        ticketDto.setEvent(EventDto.createFromEventMongo(event));
+        ticketDto.setUser(UserDto.fromUserMongoToUserDto(user));
+        ticketDto.setEvent(EventDto.fromEventMongoToEventDto(event));
         ticketDto.setPlace(ticket.getPlace());
         ticketDto.setCategory(ticket.getCategory());
         return ticketDto;

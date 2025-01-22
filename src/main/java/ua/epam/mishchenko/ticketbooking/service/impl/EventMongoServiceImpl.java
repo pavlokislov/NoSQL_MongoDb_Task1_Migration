@@ -36,7 +36,7 @@ public class EventMongoServiceImpl implements EventService {
             var event = eventRepository.findById(eventId)
                     .orElseThrow(() -> new RuntimeException("Can not to find an event by id: " + eventId));
             log.info("Event with id {} successfully found ", eventId);
-            return EventDto.createFromEventMongo(event);
+            return EventDto.fromEventMongoToEventDto(event);
         } catch (RuntimeException e) {
             log.warn("Can not to find an event by id: " + eventId);
             return null;
@@ -64,7 +64,7 @@ public class EventMongoServiceImpl implements EventService {
             var eventsByTitle = eventRepository.getAllByTitle(PageRequest.of(pageNum - 1, pageSize), title)
                     .getContent()
                     .stream()
-                    .map(EventDto::createFromEventMongo)
+                    .map(EventDto::fromEventMongoToEventDto)
                     .toList();
             if (eventsByTitle.isEmpty()) {
                 throw new RuntimeException("Can not to find a list of events by title: " + title);
@@ -98,7 +98,7 @@ public class EventMongoServiceImpl implements EventService {
             var eventsByTitle = eventRepository.getAllByDate(PageRequest.of(pageNum - 1, pageSize), day)
                     .getContent()
                     .stream()
-                    .map(EventDto::createFromEventMongo)
+                    .map(EventDto::fromEventMongoToEventDto)
                     .toList();
             if (eventsByTitle.isEmpty()) {
                 throw new RuntimeException("Can not to find a list of events for day: " + day);
@@ -131,9 +131,9 @@ public class EventMongoServiceImpl implements EventService {
                 log.warn("These title and day are already exists for one event");
                 return null;
             }
-            var savedEvent = eventRepository.save(EventDto.buildEventMongoFromEventDto(event));
+            var savedEvent = eventRepository.save(EventDto.fromEventDtoToEventMongo(event));
             log.info("Successfully creation of the event: {}", event);
-            return EventDto.createFromEventMongo(savedEvent);
+            return EventDto.fromEventMongoToEventDto(savedEvent);
         } catch (RuntimeException e) {
             log.warn("Can not to create an event: {}", event, e);
             return null;
@@ -173,9 +173,9 @@ public class EventMongoServiceImpl implements EventService {
             if (eventExistsByTitleAndDay(event)) {
                 throw new RuntimeException("These title and day are already exists for one event");
             }
-            var savedEvent = eventRepository.save(EventDto.buildEventMongoFromEventDto(event));
+            var savedEvent = eventRepository.save(EventDto.fromEventDtoToEventMongo(event));
             log.info("Successfully updated of the event: {}", event);
-            return EventDto.createFromEventMongo(savedEvent);
+            return EventDto.fromEventMongoToEventDto(savedEvent);
         } catch (RuntimeException e) {
             log.warn("Can not to update an event: {}", event, e);
             return null;

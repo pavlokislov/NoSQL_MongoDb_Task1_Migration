@@ -122,7 +122,7 @@ public class TicketServiceImpl implements TicketService {
 
     private EventDto getEvent(long eventId) {
         return eventRepository.findById(eventId)
-                .map(EventDto::createFromSqlEvent)
+                .map(EventDto::fromSqlEventToEventDto)
                 .orElseThrow(() -> new RuntimeException("Can not to find an event by id: " + eventId));
     }
 

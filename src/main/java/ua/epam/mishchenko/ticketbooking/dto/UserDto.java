@@ -34,7 +34,7 @@ public class UserDto {
         this.email = email;
     }
 
-    public static UserDto buildFromSqlUser(User sqlUser) {
+    public static UserDto fromUserToUserDto(User sqlUser) {
         UserDto userDto = new UserDto();
         userDto.setId(String.valueOf(sqlUser.getId()));
         userDto.setName(sqlUser.getName());
@@ -42,7 +42,7 @@ public class UserDto {
         return userDto;
     }
 
-    public static UserDto buildFromMongoUser(UserMongo userMongo) {
+    public static UserDto fromUserMongoToUserDto(UserMongo userMongo) {
         UserDto userDto = new UserDto();
         userDto.setId(userMongo.getId());
         userDto.setName(userMongo.getName());
@@ -50,7 +50,7 @@ public class UserDto {
         return userDto;
     }
 
-    public static User toSqlUser(UserDto userDto) {
+    public static User fromUserDtotoSqlUser(UserDto userDto) {
         User user = new User();
         Long id = Optional.ofNullable(userDto)
                 .map(UserDto::getId)
@@ -62,7 +62,7 @@ public class UserDto {
         return user;
     }
 
-    public static UserMongo toMongoUser(UserDto userDto) {
+    public static UserMongo fromUserDtotoUserMongo(UserDto userDto) {
         UserMongo user = new UserMongo();
         user.setId(user.getId());
         user.setEmail(userDto.getEmail());

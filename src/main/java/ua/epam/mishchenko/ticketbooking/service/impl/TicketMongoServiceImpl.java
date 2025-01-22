@@ -114,7 +114,7 @@ public class TicketMongoServiceImpl implements TicketService {
 
     private EventDto getEvent(String eventId) {
         return eventRepository.findById(String.valueOf(eventId))
-                .map(EventDto::createFromEventMongo)
+                .map(EventDto::fromEventMongoToEventDto)
                 .orElseThrow(() -> new RuntimeException("Can not to find an event by id: " + eventId));
     }
 

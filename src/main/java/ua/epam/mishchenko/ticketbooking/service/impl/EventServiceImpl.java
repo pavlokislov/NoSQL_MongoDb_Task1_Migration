@@ -53,7 +53,7 @@ public class EventServiceImpl implements EventService {
             var event = eventRepository.findById(Long.parseLong(eventId))
                     .orElseThrow(() -> new RuntimeException("Can not to find an event by id: " + eventId));
             log.info("Event with id {} successfully found ", eventId);
-            return EventDto.createFromSqlEvent(event);
+            return EventDto.fromSqlEventToEventDto(event);
         } catch (RuntimeException e) {
             log.warn("Can not to find an event by id: " + eventId);
             return null;
@@ -139,9 +139,9 @@ public class EventServiceImpl implements EventService {
                 log.warn("These title and day are already exists for one event");
                 return null;
             }
-            var savedEvent = eventRepository.save(EventDto.buildEventFromEventDto(event));
+            var savedEvent = eventRepository.save(EventDto.toEventDtoToEvent(event));
             log.info("Successfully creation of the event: {}", event);
-            return EventDto.createFromSqlEvent(savedEvent);
+            return EventDto.fromSqlEventToEventDto(savedEvent);
         } catch (RuntimeException e) {
             log.warn("Can not to create an event: {}", event, e);
             return null;
@@ -181,9 +181,9 @@ public class EventServiceImpl implements EventService {
             if (eventExistsByTitleAndDay(event)) {
                 throw new RuntimeException("These title and day are already exists for one event");
             }
-            var savedEvent = eventRepository.save(EventDto.buildEventFromEventDto(event));
+            var savedEvent = eventRepository.save(EventDto.toEventDtoToEvent(event));
             log.info("Successfully updated of the event: {}", event);
-            return EventDto.createFromSqlEvent(savedEvent);
+            return EventDto.fromSqlEventToEventDto(savedEvent);
         } catch (RuntimeException e) {
             log.warn("Can not to update an event: {}", event, e);
             return null;

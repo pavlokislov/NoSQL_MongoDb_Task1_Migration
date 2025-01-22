@@ -30,7 +30,7 @@ public class EventDto {
         this.ticketPrice = ticketPrice;
     }
 
-    public static EventDto createFromSqlEvent(Event event) {
+    public static EventDto fromSqlEventToEventDto(Event event) {
         EventDto eventDto = new EventDto();
         String id = Optional.ofNullable(event)
                 .map(Event::getId)
@@ -44,7 +44,7 @@ public class EventDto {
         return eventDto;
     }
 
-    public static EventDto createFromEventMongo(EventMongo event) {
+    public static EventDto fromEventMongoToEventDto(EventMongo event) {
         EventDto eventDto = new EventDto();
         eventDto.setId(event.getId());
         eventDto.setTitle(event.getTitle());
@@ -53,7 +53,7 @@ public class EventDto {
         return eventDto;
     }
 
-    public static Event buildEventFromEventDto(EventDto eventDto) {
+    public static Event toEventDtoToEvent(EventDto eventDto) {
         Event event = new Event();
         var id = Optional.ofNullable(eventDto)
                 .map(EventDto::getId)
@@ -67,7 +67,7 @@ public class EventDto {
 
     }
 
-    public static EventMongo buildEventMongoFromEventDto(EventDto eventDto) {
+    public static EventMongo fromEventDtoToEventMongo(EventDto eventDto) {
         var event = new EventMongo();
         event.setId(eventDto.getId());
         event.setDate(eventDto.getDate());
