@@ -9,6 +9,7 @@ import ua.epam.mishchenko.ticketbooking.model.mongo.EventMongo;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.Optional;
 
 
 @Data
@@ -31,7 +32,12 @@ public class EventDto {
 
     public static EventDto createFromSqlEvent(Event event) {
         EventDto eventDto = new EventDto();
-        eventDto.setId(String.valueOf(event.getId()));
+        String id = Optional.ofNullable(event)
+                .map(Event::getId)
+                .map(String::valueOf)
+                .orElse(null);
+
+        eventDto.setId(id);
         eventDto.setTitle(event.getTitle());
         eventDto.setDate(event.getDate());
         eventDto.setTicketPrice(event.getTicketPrice());
@@ -49,7 +55,11 @@ public class EventDto {
 
     public static Event buildEventFromEventDto(EventDto eventDto) {
         Event event = new Event();
-        event.setId(Long.parseLong(eventDto.getId()));
+        var id = Optional.ofNullable(eventDto)
+                .map(EventDto::getId)
+                .map(Long::parseLong)
+                .orElse(null);
+        event.setId(id);
         event.setDate(eventDto.getDate());
         event.setTitle(eventDto.getTitle());
         event.setTicketPrice(eventDto.getTicketPrice());

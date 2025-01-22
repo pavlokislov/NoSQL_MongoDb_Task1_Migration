@@ -69,6 +69,7 @@ public class UserServiceImpl implements UserService {
                 return null;
             }
             var user = userRepository.getByEmail(email)
+                    .map(UserDto::buildFromSqlUser)
                     .orElseThrow(() -> new RuntimeException("Can not to get an user by email: " + email));
             log.info("The user with email {} successfully found ", email);
             return user;
@@ -100,7 +101,9 @@ public class UserServiceImpl implements UserService {
             }
             log.info("All users successfully found by name {} with page size {} and number of page {}",
                     name, pageSize, pageNum);
-            return usersByName.getContent();
+            return usersByName.getContent().stream()
+                    .map(UserDto::buildFromSqlUser)
+                    .toList();
         } catch (RuntimeException e) {
             log.warn("Can not to find a list of users by name '{}'", name, e);
             return new ArrayList<>();

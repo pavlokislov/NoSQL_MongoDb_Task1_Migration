@@ -5,7 +5,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ua.epam.mishchenko.ticketbooking.model.Category;
 import ua.epam.mishchenko.ticketbooking.model.Ticket;
+import ua.epam.mishchenko.ticketbooking.model.mongo.EventMongo;
 import ua.epam.mishchenko.ticketbooking.model.mongo.TicketMongo;
+import ua.epam.mishchenko.ticketbooking.model.mongo.UserMongo;
 
 @Data
 @NoArgsConstructor
@@ -30,18 +32,18 @@ public class TicketDto {
     public static TicketDto fromSqlTicket(Ticket ticket) {
         TicketDto ticketDto = new TicketDto();
         ticketDto.setId(String.valueOf(ticket.getId()));
-        ticketDto.setUser(UserDto.buildFromSqlUser(ticket.getUser())); // Assuming you have a method fromSqlUser
+        ticketDto.setUser(UserDto.buildFromSqlUser(ticket.getUser()));
         ticketDto.setEvent(EventDto.createFromSqlEvent(ticket.getEvent()));
         ticketDto.setPlace(ticket.getPlace());
         ticketDto.setCategory(ticket.getCategory());
         return ticketDto;
     }
 
-    public static TicketDto fromMongoTicket(TicketMongo ticket) {
+    public static TicketDto fromMongoTicket(TicketMongo ticket, EventMongo event, UserMongo user) {
         TicketDto ticketDto = new TicketDto();
         ticketDto.setId(String.valueOf(ticket.getId()));
-        ticketDto.setUser(UserDto.buildFromMongoUser(ticket.getUser())); // Assuming you have a method fromSqlUser
-        ticketDto.setEvent(EventDto.createFromEventMongo(ticket.getEvent()));
+        ticketDto.setUser(UserDto.buildFromMongoUser(user));
+        ticketDto.setEvent(EventDto.createFromEventMongo(event));
         ticketDto.setPlace(ticket.getPlace());
         ticketDto.setCategory(ticket.getCategory());
         return ticketDto;

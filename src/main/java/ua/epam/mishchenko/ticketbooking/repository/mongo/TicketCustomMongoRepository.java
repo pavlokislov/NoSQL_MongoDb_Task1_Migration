@@ -24,9 +24,10 @@ public class TicketCustomMongoRepository {
     public Page<TicketDto> getAllByEventId(Pageable pageable, String eventId) {
         EventMongo event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new IllegalArgumentException("Event does not exist for id: " + eventId));
+
         Page<TicketMongo> pageResult = ticketRepository.findByEvent(event, pageable);
         List<TicketDto> dtosList = pageResult.getContent().stream()
-                .map(TicketDto::fromMongoTicket)
+                .map(ticket -> TicketDto.fromMongoTicket(ticket, event,  ticket.getUser()))
                 .toList();
 
         return new PageImpl<>(dtosList, pageable, pageResult.getTotalElements());
@@ -37,7 +38,7 @@ public class TicketCustomMongoRepository {
                 .orElseThrow(() -> new IllegalArgumentException("User does not exist for id: " + userId));
         Page<TicketMongo> pageResult = ticketRepository.findByUser(user, pageable);
         List<TicketDto> dtosList = pageResult.getContent().stream()
-                .map(TicketDto::fromMongoTicket)
+                .map(ticket -> TicketDto.fromMongoTicket(ticket, ticket.getEvent(),  ticket.getUser()))
                 .toList();
 
         return new PageImpl<>(dtosList, pageable, pageResult.getTotalElements());    }

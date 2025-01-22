@@ -48,7 +48,6 @@ public class DataMigrationServiceImpl implements DatabaseMigrationService {
             mongoEvents.add(mongoEvent);
             mongoTemplate.save(mongoEvent, "events");
         });
-        //here save in Db don't work
         log.info("End of database migration");
 
     }

@@ -168,12 +168,12 @@ public class UsersController {
      * @return the model and view
      */
     @PutMapping
-    public ModelAndView updateUser(@RequestParam long id,
+    public ModelAndView updateUser(@RequestParam String id,
                                    @RequestParam String name,
                                    @RequestParam String email) {
         log.info("Updating user with id: {}", id);
         Map<String, Object> model = new HashMap<>();
-        UserDto user = bookingFacade.updateUser(createUserEntityWithId(String.valueOf(id), name, email));
+        UserDto user = bookingFacade.updateUser(createUserEntityWithId(id, name, email));
         if (isNull(user)) {
             model.put("message", "Can not to update user with id: " + id);
             log.info("Can not to update user with id: {}", id);

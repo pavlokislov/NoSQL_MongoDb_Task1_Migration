@@ -179,15 +179,22 @@ public class TicketServiceImpl implements TicketService {
                 log.warn("The user can not be a null");
                 return new ArrayList<>();
             }
-            System.out.println(ticketRepository.findAll());
-            Page<TicketDto> ticketsByUser = ticketRepository.getAllByUserId(
+
+            Page<Ticket> pageResult = ticketRepository.getAllByUserId(
                     PageRequest.of(pageNum - 1, pageSize), Long.parseLong(user.getId()));
-            if (!ticketsByUser.hasContent()) {
+
+            if (!pageResult.hasContent()) {
                 throw new RuntimeException("Can not to fina a list of booked tickets by user with id: " + user.getId());
             }
+
+            List<TicketDto> ticketsByUser = pageResult.getContent().stream()
+                    .map(TicketDto::fromSqlTicket)
+                    .toList();
+
             log.info("All booked tickets successfully found by user {} with page size {} and number of page {}",
                     user, pageSize, pageNum);
-            return ticketsByUser.getContent();
+
+            return ticketsByUser;
         } catch (RuntimeException e) {
             log.warn("Can not to find a list of booked tickets by user '{}'", user, e);
             return new ArrayList<>();
@@ -221,14 +228,18 @@ public class TicketServiceImpl implements TicketService {
                 log.warn("The event can not be a null");
                 return new ArrayList<>();
             }
-            Page<TicketDto> ticketsByEvent = ticketRepository.getAllByEventId(
+            Page<Ticket> ticketsByEvent = ticketRepository.getAllByEventId(
                     PageRequest.of(pageNum - 1, pageSize), Long.valueOf(event.getId()));
             if (!ticketsByEvent.hasContent()) {
                 throw new RuntimeException("Can not to fina a list of booked tickets by event with id: " + event.getId());
             }
+
             log.info("All booked tickets successfully found by event {} with page size {} and number of page {}",
                     event, pageSize, pageNum);
-            return ticketsByEvent.getContent();
+            return ticketsByEvent.stream()
+                    .map(TicketDto::fromSqlTicket)
+                    .toList();
+
         } catch (RuntimeException e) {
             log.warn("Can not to find a list of booked tickets by event '{}'", event, e);
             return new ArrayList<>();

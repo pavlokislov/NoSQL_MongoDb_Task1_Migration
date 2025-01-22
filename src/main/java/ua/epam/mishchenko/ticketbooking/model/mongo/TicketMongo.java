@@ -25,11 +25,4 @@ public class TicketMongo {
     private int place;
     private Category category;
 
-    public TicketMongo(UserMongo user, EventMongo event, int place, Category category) {
-        TicketMongo ticket = new TicketMongo();
-        ticket.setUser(user);
-        ticket.setEvent(event);
-        ticket.setPlace(place);
-        ticket.setCategory(category);
-    }
 }

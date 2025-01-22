@@ -83,7 +83,10 @@ public class TicketMongoServiceImpl implements TicketService {
     }
 
     private TicketDto saveBookedTicket(String userId, String eventId, int place, Category category) {
-        return TicketDto.fromMongoTicket(ticketRepository.save(createNewTicket(userId, eventId, place, category)));
+        UserMongo user = userRepository.findById(userId).get();
+        EventMongo event = eventRepository.findById(eventId).get();
+        TicketMongo saveTicked = ticketRepository.save(createNewTicket(user, event, place, category));
+        return TicketDto.fromMongoTicket(saveTicked, event, user);
     }
 
     private void buyTicket(UserAccountMongo userAccount, EventDto event) {
@@ -139,16 +142,19 @@ public class TicketMongoServiceImpl implements TicketService {
     /**
      * Create new ticket.
      *
-     * @param userId   the user id
-     * @param eventId  the event id
+     * @param user     the user id
+     * @param event    the event id
      * @param place    the place
      * @param category the category
      * @return the ticket
      */
-    private TicketMongo createNewTicket(String userId, String eventId, int place, Category category) {
-        UserMongo user = userRepository.findById(userId).get();
-        EventMongo event = eventRepository.findById(eventId).get();
-        return new TicketMongo(user, event, place, category);
+    private TicketMongo createNewTicket(UserMongo user, EventMongo event, int place, Category category) {
+        TicketMongo ticket = new TicketMongo();
+        ticket.setUser(user);
+        ticket.setEvent(event);
+        ticket.setPlace(place);
+        ticket.setCategory(category);
+        return ticket;
     }
 
     /**

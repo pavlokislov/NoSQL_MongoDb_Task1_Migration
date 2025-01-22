@@ -1,13 +1,17 @@
 package ua.epam.mishchenko.ticketbooking.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import ua.epam.mishchenko.ticketbooking.model.User;
 import ua.epam.mishchenko.ticketbooking.model.mongo.UserMongo;
 
+import java.util.Optional;
+
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class UserDto {
 
     @Id
@@ -31,11 +35,11 @@ public class UserDto {
     }
 
     public static UserDto buildFromSqlUser(User sqlUser) {
-       UserDto userDto = new UserDto();
-       userDto.setId(String.valueOf(sqlUser.getId()));
-       userDto.setName(sqlUser.getName());
-       userDto.setEmail(sqlUser.getEmail());
-       return userDto;
+        UserDto userDto = new UserDto();
+        userDto.setId(String.valueOf(sqlUser.getId()));
+        userDto.setName(sqlUser.getName());
+        userDto.setEmail(sqlUser.getEmail());
+        return userDto;
     }
 
     public static UserDto buildFromMongoUser(UserMongo userMongo) {
@@ -48,7 +52,11 @@ public class UserDto {
 
     public static User toSqlUser(UserDto userDto) {
         User user = new User();
-        user.setId(Long.parseLong(userDto.getId()));
+        Long id = Optional.ofNullable(userDto)
+                .map(UserDto::getId)
+                .map(Long::parseLong)
+                .orElse(null);
+        user.setId(id);
         user.setEmail(userDto.getEmail());
         user.setName(userDto.getName());
         return user;

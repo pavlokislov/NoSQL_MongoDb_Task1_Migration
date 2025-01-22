@@ -34,20 +34,18 @@ public class StartupRunner implements CommandLineRunner {
     public void run(String... args) {
         databaseMigrationService.migrate();
 
-        List<EventMongo> all = eventMongoRepo.findAll();
-        EventMongo firstEvent = all.get(0);
-        shouldExist(eventMongoRepo.getAllByTitle(PageRequest.of(0, 5), firstEvent.getTitle()));
-        shouldExist(eventMongoRepo.getAllByDate(PageRequest.of(0, 5), firstEvent.getDate()));
-        shouldExist(eventMongoRepo.existsByTitleAndDate(firstEvent.getTitle(), firstEvent.getDate()));
-
-        TicketMongo firstTicket = ticketMongoRepository.findAll().get(0);
-        shouldExist(ticketCustomMongoRepo.getAllByUserId(PageRequest.of(0,5), firstTicket.getUser().getId()));
-        shouldExist(ticketCustomMongoRepo.getAllByEventId(PageRequest.of(0,5), firstTicket.getEvent().getId()));
-        shouldExist(ticketCustomMongoRepo.existsByEventAndPlaceAndCategory(firstTicket.getEvent().getId(), firstTicket.getPlace(), firstTicket.getCategory() ));
-
-        shouldExist(userAccountCustomMongoRepository.findByUserId(firstTicket.getUser().getId()).isPresent());
-
-        System.out.printf("");
+//        List<EventMongo> all = eventMongoRepo.findAll();
+//        EventMongo firstEvent = all.get(0);
+//        shouldExist(eventMongoRepo.getAllByTitle(PageRequest.of(0, 5), firstEvent.getTitle()));
+//        shouldExist(eventMongoRepo.getAllByDate(PageRequest.of(0, 5), firstEvent.getDate()));
+//        shouldExist(eventMongoRepo.existsByTitleAndDate(firstEvent.getTitle(), firstEvent.getDate()));
+//
+//        TicketMongo firstTicket = ticketMongoRepository.findAll().get(0);
+//        shouldExist(ticketCustomMongoRepo.getAllByUserId(PageRequest.of(0,5), firstTicket.getUser().getId()));
+//        shouldExist(ticketCustomMongoRepo.getAllByEventId(PageRequest.of(0,5), firstTicket.getEvent().getId()));
+//        shouldExist(ticketCustomMongoRepo.existsByEventAndPlaceAndCategory(firstTicket.getEvent().getId(), firstTicket.getPlace(), firstTicket.getCategory() ));
+//
+//        shouldExist(userAccountCustomMongoRepository.findByUserId(firstTicket.getUser().getId()).isPresent());
     }
 
     public void shouldExist(Page<?> page) {
